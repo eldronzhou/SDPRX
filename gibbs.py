@@ -49,13 +49,13 @@ def initial_state(data1, data2, M, N1, N2, idx1_shared, idx2_shared, ld_boundari
     
     tmp1 = []; tmp2 = []
     for j in range(len(ld_boundaries1)):
-	start_i1 = ld_boundaries1[j][0]
-	end_i1 = ld_boundaries1[j][1]
-	start_i2 = ld_boundaries2[j][0]
-	end_i2 = ld_boundaries2[j][1]
-	tmp1.append(np.setdiff1d(np.array(range(end_i1-start_i1)), idx1_shared[j])+start_i1)
-	tmp2.append(np.setdiff1d(np.array(range(end_i2-start_i2)), idx2_shared[j])+start_i2)
-	state['assignment2'][idx2_shared[j]+start_i2] = state['assignment1'][idx1_shared[j]+start_i1]
+        start_i1 = ld_boundaries1[j][0]
+        end_i1 = ld_boundaries1[j][1]
+        start_i2 = ld_boundaries2[j][0]
+        end_i2 = ld_boundaries2[j][1]
+        tmp1.append(np.setdiff1d(np.array(range(end_i1-start_i1)), idx1_shared[j])+start_i1)
+        tmp2.append(np.setdiff1d(np.array(range(end_i2-start_i2)), idx2_shared[j])+start_i2)
+        state['assignment2'][idx2_shared[j]+start_i2] = state['assignment1'][idx1_shared[j]+start_i1]
 
     state['idx_pop1'] = np.concatenate(tmp1)
     state['idx_pop2'] = np.concatenate(tmp2)
@@ -150,30 +150,30 @@ def sample_assignment(j, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries
     # pop1 specific variants
     idx_pop1 = np.setdiff1d(np.array(range(len(b1))), idx1_shared[j]) 
     if (len(idx_pop1) > 0):
-	idx = range(0, state['population'][1])
-	cluster_var = state['cluster_var'][idx]
-	pi = np.array(state['pi'])[idx]
-	C = -.5 * np.log(state['eta']**2*N1*np.outer(np.diag(B1[idx_pop1,:][:,idx_pop1]), cluster_var) + 1) + \
-		np.log( pi + 1e-40 )
-	a = (N1*b1[idx_pop1])**2 / (2 * np.add.outer(state['eta']**2 * N1 * np.diag(B1[idx_pop1,:][:,idx_pop1]),  1.0/cluster_var[1:]) )
-	log_prob_mat = np.insert(a, 0, 0, axis=1) + C
-	logexpsum = special.logsumexp(log_prob_mat, axis=1).reshape((len(idx_pop1), 1))
-	prob_mat = np.exp(log_prob_mat - logexpsum)
-	assignment1[idx_pop1] = vectorized_random_choice(prob_mat.T, np.array(state['cluster_ids_'])[idx])
+    	idx = range(0, state['population'][1])
+    	cluster_var = state['cluster_var'][idx]
+    	pi = np.array(state['pi'])[idx]
+    	C = -.5 * np.log(state['eta']**2*N1*np.outer(np.diag(B1[idx_pop1,:][:,idx_pop1]), cluster_var) + 1) + \
+    		np.log( pi + 1e-40 )
+    	a = (N1*b1[idx_pop1])**2 / (2 * np.add.outer(state['eta']**2 * N1 * np.diag(B1[idx_pop1,:][:,idx_pop1]),  1.0/cluster_var[1:]) )
+    	log_prob_mat = np.insert(a, 0, 0, axis=1) + C
+    	logexpsum = special.logsumexp(log_prob_mat, axis=1).reshape((len(idx_pop1), 1))
+    	prob_mat = np.exp(log_prob_mat - logexpsum)
+    	assignment1[idx_pop1] = vectorized_random_choice(prob_mat.T, np.array(state['cluster_ids_'])[idx])
 
     # pop2 specific variants
     idx_pop2 = np.setdiff1d(np.array(range(len(b2))), idx2_shared[j]) 
     if (len(idx_pop2) > 0):
-	idx = range(1) + range(state['population'][1], state['population'][2])
-	cluster_var = state['cluster_var'][idx]
-	pi = np.array(state['pi'])[idx]
-	C = -.5 * np.log(state['eta']**2*N2*np.outer(np.diag(B2[idx_pop2,:][:,idx_pop2]), cluster_var) + 1) + \
-		np.log( pi + 1e-40 )
-	a = (N2*b2[idx_pop2])**2 / (2 * np.add.outer(state['eta']**2 * N2 * np.diag(B2[idx_pop2,:][:,idx_pop2]),  1.0/cluster_var[1:]) )
-	log_prob_mat = np.insert(a, 0, 0, axis=1) + C
-	logexpsum = special.logsumexp(log_prob_mat, axis=1).reshape((len(idx_pop2), 1))
-	prob_mat = np.exp(log_prob_mat - logexpsum)
-	assignment2[idx_pop2] = vectorized_random_choice(prob_mat.T, np.array(state['cluster_ids_'])[idx])
+    	idx = range(1) + range(state['population'][1], state['population'][2])
+    	cluster_var = state['cluster_var'][idx]
+    	pi = np.array(state['pi'])[idx]
+    	C = -.5 * np.log(state['eta']**2*N2*np.outer(np.diag(B2[idx_pop2,:][:,idx_pop2]), cluster_var) + 1) + \
+    		np.log( pi + 1e-40 )
+    	a = (N2*b2[idx_pop2])**2 / (2 * np.add.outer(state['eta']**2 * N2 * np.diag(B2[idx_pop2,:][:,idx_pop2]),  1.0/cluster_var[1:]) )
+    	log_prob_mat = np.insert(a, 0, 0, axis=1) + C
+    	logexpsum = special.logsumexp(log_prob_mat, axis=1).reshape((len(idx_pop2), 1))
+    	prob_mat = np.exp(log_prob_mat - logexpsum)
+    	assignment2[idx_pop2] = vectorized_random_choice(prob_mat.T, np.array(state['cluster_ids_'])[idx])
 
     return assignment1, assignment2
 
@@ -217,24 +217,24 @@ def sample_beta(j, state, idx1_shared, idx2_shared, ld_boundaries1, ld_boundarie
         # all SNPs in this block are non-causal
         pass
     elif sum(idx1) > 1 and sum(idx_pop2) == 0:
-	shrink_ld = B1[idx1,:][:,idx1]
-	mat = state['eta']**2*N1*shrink_ld + np.diag(1.0 / cluster_var1[idx1])
-	chol, low = linalg.cho_factor(mat, overwrite_a=False)
-	cov_mat = linalg.cho_solve((chol, low), np.eye(chol.shape[0])) 
-	mu = state['eta']*N1*np.dot(cov_mat, A1[:, idx1].T).dot(beta_margin1)
-	beta1[idx1 == 1] = sample_MVN(mu, cov_mat)
+    	shrink_ld = B1[idx1,:][:,idx1]
+    	mat = state['eta']**2*N1*shrink_ld + np.diag(1.0 / cluster_var1[idx1])
+    	chol, low = linalg.cho_factor(mat, overwrite_a=False)
+    	cov_mat = linalg.cho_solve((chol, low), np.eye(chol.shape[0])) 
+    	mu = state['eta']*N1*np.dot(cov_mat, A1[:, idx1].T).dot(beta_margin1)
+    	beta1[idx1 == 1] = sample_MVN(mu, cov_mat)
     elif sum(idx1) == 1 and sum(idx_pop2) == 0:
         var_k = cluster_var1[idx1]
         const = var_k / (var_k*state['eta']**2*np.squeeze(B1[idx1,:][:,idx1]) + 1.0/N1)
         bj = state['b1'][start_i1:end_i1][idx1]
         beta1[idx1 == 1] = np.sqrt(const*1.0/N1)*stats.norm.rvs() + const*bj
     elif sum(idx2) > 1 and sum(idx_pop1) == 0:
-	shrink_ld = B2[idx2,:][:,idx2]
-	mat = state['eta']**2*N2*shrink_ld + np.diag(1.0 / cluster_var2[idx2])
-	chol, low = linalg.cho_factor(mat, overwrite_a=False)
-	cov_mat = linalg.cho_solve((chol, low), np.eye(chol.shape[0]))
-	mu = state['eta']*N2*np.dot(cov_mat, A2[:, idx2].T).dot(beta_margin2)
-	beta2[idx2 == 1] = sample_MVN(mu, cov_mat)
+    	shrink_ld = B2[idx2,:][:,idx2]
+    	mat = state['eta']**2*N2*shrink_ld + np.diag(1.0 / cluster_var2[idx2])
+    	chol, low = linalg.cho_factor(mat, overwrite_a=False)
+    	cov_mat = linalg.cho_solve((chol, low), np.eye(chol.shape[0]))
+    	mu = state['eta']*N2*np.dot(cov_mat, A2[:, idx2].T).dot(beta_margin2)
+    	beta2[idx2 == 1] = sample_MVN(mu, cov_mat)
     elif sum(idx2) == 1 and sum(idx_pop1) == 0:
         var_k = cluster_var2[idx2]
         const = var_k / (var_k*state['eta']**2*np.squeeze(B2[idx2,:][:,idx2]) + 1.0/N2)
@@ -338,7 +338,7 @@ def sample_sigma2(state, rho, VS=True):
 
     table2 = [[] for i in range(state['num_clusters_'])]
     for i in range(len(state['assignment2'])):
-	table2[state['assignment2'][i]].append(i)
+        table2[state['assignment2'][i]].append(i)
     
     # pop1 specifc
     for i in range(1, state['population'][1]):

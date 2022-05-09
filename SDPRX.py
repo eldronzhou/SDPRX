@@ -61,12 +61,7 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
     
     print 'h2_1: ' + str(np.median(trace['h2_1'])) + ' h2_2: ' + str(np.median(trace['h2_2'])) + ' max_beta1: ' + str(np.max(poster_mean1)) + ' max_beta2: ' + str(np.max(poster_mean2))
 
-    print state['pi_pop']
-
-    if save_mcmc is not None:
-        f = gzip.open(args.save_mcmc, 'wb')
-        pickle.dump(trace, f, protocol=2)
-        f.close()
+    print(state['pi_pop'])
 
     return poster_mean1, poster_mean2
 
@@ -168,7 +163,7 @@ def pipeline(args):
 	    A1_2.extend(list(tmp_blk_ss2[idx2].A1_x))
 	    left2 += np.sum(idx2)
 
-    print str(args.chr) + ':' + str(len(beta_margin1)) + ' ' + str(len(beta_margin2))
+    print(str(args.chr) + ':' + str(len(beta_margin1)) + ' ' + str(len(beta_margin2)))
 
     print('Start MCMC ...')
     res1, res2 = SDPRX_gibbs(beta_margin1=np.array(beta_margin1)/args.c1, beta_margin2=np.array(beta_margin2)/args.c2, N1=N1, N2=N2, rho=args.rho, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, 
@@ -183,7 +178,7 @@ def pipeline(args):
     out2.to_csv(args.out+'_2.txt', columns=['SNP', 'A1', 'post_beta'], sep="\t", index=False)
 
 
-parser = argparse.ArgumentParser(prog='SDPR',
+parser = argparse.ArgumentParser(prog='SDPRX',
                                 formatter_class=argparse.RawDescriptionHelpFormatter,
                                 description="Version 0.0.1 Test Only")
 
@@ -192,9 +187,6 @@ parser.add_argument('--ss1', type=str, required=True,
 
 parser.add_argument('--ss2', type=str, required=True,
                         help='Path to cleaned summary statistics 2. e.g. /home/tutor/myss.txt')
-
-parser.add_argument('--block', type=str, default=None,
-                        help='Path to LD block. Prefix for .bed file output by ldetect. e.g. /home/ldetect/bed/EUR-chr')
 
 parser.add_argument('--valid', type=str, default=None,
                         help='Path to valid .bim file..')
@@ -220,32 +212,18 @@ parser.add_argument('--rho', type=float, default=0, required=True,
 parser.add_argument('--M', type=int, default=20,
                         help='Maximum number of normal components in Truncated Dirichlet Process.')
 
-parser.add_argument('--VS', type=bool, default=True, 
-                        help='Whether to perform variable selection.')
-
 parser.add_argument('--threads', type=int, default=1, 
                         help='Number of Threads used.')
 
-parser.add_argument('--seed', type=int, 
-                        help='Specify the seed for numpy random number generation.')
-
-parser.add_argument('--mcmc_samples', type=int, default=1500,
+parser.add_argument('--mcmc_samples', type=int, default=1000,
                         help='Specify the total number of iterations in MCMC.')
 
 parser.add_argument('--burn', type=int, default=200,
                         help='Specify the total number of iterations to be discarded before \
                         Markov Chain approached the stationary distribution.')
 
-parser.add_argument('--save_ld', type=str, default=None,
-                        help='Prefix of the location to save calculated LD Reference file \
-                        in pickled and gzipped format.')
-
 parser.add_argument('--load_ld', type=str, default=None,
                         help='Prefix of the location to load calculated LD Reference file \
-                        in pickled and gzipped format.')
-
-parser.add_argument('--save_mcmc', type=str, default=None,
-                        help='Prefix of the location to save intermediate output of MCMC \
                         in pickled and gzipped format.')
 
 parser.add_argument('--out', type=str, required=True,
@@ -253,7 +231,7 @@ parser.add_argument('--out', type=str, required=True,
 
 def main():
     if sys.version_info[0] != 2:
-        print('ERROR: SDPR currently does not support Python 3')
+        print('ERROR: SDPRX currently does not support Python 3')
         sys.exit(1)
     pipeline(parser.parse_args())
 
