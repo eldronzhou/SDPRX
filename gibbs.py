@@ -74,9 +74,6 @@ def calc_b(j, state, ld_boundaries1, ld_boundaries2, ref_ld_mat1, ref_ld_mat2):
     ref_ld1 = ref_ld_mat1[j]
     ref_ld2 = ref_ld_mat2[j]
     shrink_ld1 = ref_ld1; shrink_ld2 = ref_ld2
-#     shrink_ld = .999*ref_ld  + (1-.999)*np.identity(ref_ld.shape[0])
-#     b = state['eta'] * state['beta_margin_'][start_i:end_i] - \
-#         state['eta']**2 * (np.dot(shrink_ld, state['beta'][start_i:end_i]) - state['beta'][start_i:end_i])
     b1 = state['eta']*np.dot(state['A1'][j], state['beta_margin1_'][start_i1:end_i1]) - state['eta']**2 * \
     (np.dot(state['B1'][j], state['beta1'][start_i1:end_i1]) - np.diag(state['B1'][j])*state['beta1'][start_i1:end_i1])
     b2 = state['eta']*np.dot(state['A2'][j], state['beta_margin2_'][start_i2:end_i2]) - state['eta']**2 * \
@@ -105,7 +102,6 @@ def sample_assignment(j, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries
     assignment2 = np.zeros(len(b2))
     
     # null or population 1 specific
-#     idx = np.where(state['population'] <= 1)[0]
     idx = range(0, state['population'][1])
     cluster_var = state['cluster_var'][idx]
     pi = np.array(state['pi'])[idx]
@@ -115,7 +111,6 @@ def sample_assignment(j, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries
     log_prob_mat[:,idx] = np.insert(a, 0, 0, axis=1) + C
     
     # population 2 specific
-#     idx = np.where(state['population'] == 2)[0]
     idx = range(state['population'][1], state['population'][2])
     cluster_var = state['cluster_var'][idx]
     pi = np.array(state['pi'])[idx]
@@ -125,7 +120,6 @@ def sample_assignment(j, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries
     log_prob_mat[:,idx] = a + C
     
     # shared with correlation
-#     idx = np.where(state['population'] == 3)[0]
     idx = range(state['population'][2], state['population'][3])
     cluster_var = state['cluster_var'][idx]
     pi = np.array(state['pi'])[idx]
@@ -254,7 +248,6 @@ def sample_beta(j, state, idx1_shared, idx2_shared, ld_boundaries1, ld_boundarie
         diag2 = np.diag(1.0/cluster_var2[idx_pop2])
         cor2 = np.zeros((sum(idx_pop2), sum(idx_pop1)))
         
-#         rho = 0
         for i in range(len(idx_cor1)):
             cor1[idx_cor1[i],idx_cor2[i]] = -rho/(1-rho**2)*diag1[idx_cor1[i],idx_cor1[i]]
             cor2[idx_cor2[i],idx_cor1[i]] = -rho/(1-rho**2)*diag1[idx_cor1[i],idx_cor1[i]]
@@ -349,7 +342,6 @@ def sample_sigma2(state, rho, VS=True):
         b[i] = np.sum(state['beta2'][table2[i]]**2) / 2.0 + state['hyperparameters_']['b0k']
     
     # shared with correlation
-#     rho = 0
     for i in range(state['population'][2], state['population'][3]):
         a[i] += state['suffstats'][i] / 2.0
         beta1 = state['beta1'][table1[i]]
@@ -407,8 +399,6 @@ def update_p(state):
     for j in range(1,4):
         m = len(state['V'][j])
         V = state['V'][j]
-    #     for i in range(1, m-1):
-    #         pi[i] = np.prod( 1 - np.array(V[0:i]) ) * state['V'][j][i]
         a = np.cumprod(1-np.array(V)[0:(m-2)])*V[1:(m-1)]
         pi = dict(zip(range(1, m), a))
         pi[0] = state['V'][j][0]
