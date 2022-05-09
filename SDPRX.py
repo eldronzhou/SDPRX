@@ -37,7 +37,7 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
             trace['h2_2'].append(state['h2_2']*state['eta']**2)
 
 	#if (i % 100 == 0):
-	 #   print 'h2_1: ' + str(state['h2_1']*state['eta']**2) + 'h2_2: ' + str(state['h2_2']*state['eta']**2) + ' max_beta1: ' + str(np.max(state['beta1']*state['eta'])) + ' max_beta2: ' + str(np.max(state['beta2']*state['eta']))
+	 #   print('h2_1: ' + str(state['h2_1']*state['eta']**2) + 'h2_2: ' + str(state['h2_2']*state['eta']**2) + ' max_beta1: ' + str(np.max(state['beta1']*state['eta'])) + ' max_beta2: ' + str(np.max(state['beta2']*state['eta'])))
 
         # record the result
         trace['beta1'][i,] = state['beta1']*state['eta']
@@ -95,14 +95,7 @@ def pipeline(args):
     snps = ld_dict[0]; a1 = ld_dict[1]; a2 = ld_dict[2]
     ref_boundary = ld_dict[3]; ref1 = ld_dict[4]; ref2 = ld_dict[5]
 
-    #snps1 = ld_dict[0]; a1_1 = ld_dict[1]; a2_1 = ld_dict[2]
-    #ref_boundary1 = ld_dict[3]; ref1 = ld_dict[4]
-    #snps2 = ld_dict[5]; a1_2 = ld_dict[6]; a2_2 = ld_dict[7]
-    #ref_boundary2 = ld_dict[8]; ref2= ld_dict[9]
-
     ref = pd.DataFrame({'SNP':snps, 'A1':a1, 'A2':a2})
-    #ref_bim1 = pd.DataFrame({'SNP':snps1, 'A1':a1_1, 'A2':a2_1})
-    #ref_bim2 = pd.DataFrame({'SNP':snps2, 'A1':a1_2, 'A2':a2_2})
     tmp_ss1 = pd.merge(ref, ss1, on="SNP", how="left")
     tmp_ss2 = pd.merge(ref, ss2, on="SNP", how="left")
 
@@ -128,14 +121,12 @@ def pipeline(args):
 	    continue
 	
 	if np.sum(idx1) != 0 and np.sum(idx2) != 0 and np.sum(idx2[idx1]) != 0:
-	#if np.sum(idx1) != 0 and np.sum(idx2) != 0 and np.sum(tmp_blk_ss1[idx1].SNP.isin(tmp_blk_ss2[idx2].SNP)) != 0:
 	    ref_ld_mat1.append(ref1[i][idx1,:][:,idx1])
 	    ld_boundaries1.append([left1, left1+np.sum(idx1)])
 	    beta_margin1.extend(list(tmp_beta1[idx1])) 
 	    SNP1.extend(list(tmp_blk_ss1[idx1].SNP))
 	    A1_1.extend(list(tmp_blk_ss1[idx1].A1_x))
 	    idx1_shared.append(np.where(idx2[idx1])[0])
-	    #idx1_shared.append(np.where(tmp_blk_ss1[idx1].SNP.isin(tmp_blk_ss2[idx2].SNP))[0])
 	    left1 += np.sum(idx1)
 
 	    ref_ld_mat2.append(ref2[i][idx2,:][:,idx2])
@@ -144,7 +135,6 @@ def pipeline(args):
 	    SNP2.extend(list(tmp_blk_ss2[idx2].SNP))
 	    A1_2.extend(list(tmp_blk_ss2[idx2].A1_x))
 	    idx2_shared.append(np.where(idx1[idx2])[0])
-	    #idx2_shared.append(np.where(tmp_blk_ss2[idx2].SNP.isin(tmp_blk_ss1[idx1].SNP))[0])
 	    left2 += np.sum(idx2)
 
 	elif np.sum(idx1) != 0:
@@ -209,7 +199,7 @@ parser.add_argument('--c2', type=float, default=1.0,
 parser.add_argument('--rho', type=float, default=0, required=True,
                         help='Transethnic genetic correlation.')
 
-parser.add_argument('--M', type=int, default=20,
+parser.add_argument('--M', type=int, default=1000,
                         help='Maximum number of normal components in Truncated Dirichlet Process.')
 
 parser.add_argument('--threads', type=int, default=1, 
@@ -222,7 +212,7 @@ parser.add_argument('--burn', type=int, default=200,
                         help='Specify the total number of iterations to be discarded before \
                         Markov Chain approached the stationary distribution.')
 
-parser.add_argument('--load_ld', type=str, default=None,
+parser.add_argument('--load_ld', type=str, required=True,
                         help='Prefix of the location to load calculated LD Reference file \
                         in pickled and gzipped format.')
 
