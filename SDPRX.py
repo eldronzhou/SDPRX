@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import numpy as np
 from scipy import stats
-import cPickle as pickle
+try:
+    import pickle as pickle
+except:
+    import cPickle as pickle
 import gzip
-import gibbs, ld
+import gibbs
 import argparse
 import sys, util
 import pandas as pd
@@ -89,7 +92,10 @@ def pipeline(args):
     left1 = 0; left2 = 0
 
     f = gzip.open(args.load_ld + '/chr_' + str(args.chr) +'.gz', 'r')
-    ld_dict = pickle.load(f)
+    try:
+	ld_dict = pickle.load(f)
+    except:
+	ld_dict = pickle.load(f, encoding='latin1')
     f.close()
     
     snps = ld_dict[0]; a1 = ld_dict[1]; a2 = ld_dict[2]
@@ -158,7 +164,7 @@ def pipeline(args):
     print('Start MCMC ...')
     res1, res2 = SDPRX_gibbs(beta_margin1=np.array(beta_margin1)/args.c1, beta_margin2=np.array(beta_margin2)/args.c2, N1=N1, N2=N2, rho=args.rho, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, 
                  ref_ld_mat2=ref_ld_mat2, mcmc_samples=args.mcmc_samples, 
-                 burn=args.burn, max_cluster=args.M, save_mcmc=args.save_mcmc, n_threads=args.threads, VS=args.VS)
+                 burn=args.burn, max_cluster=args.M, save_mcmc=args.save_mcmc, n_threads=args.threads, VS=True)
 
     print('Done!\nWrite output to {}'.format(args.out+'.txt'))
     
