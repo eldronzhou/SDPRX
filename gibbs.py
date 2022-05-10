@@ -158,7 +158,7 @@ def sample_assignment(j, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries
     # pop2 specific variants
     idx_pop2 = np.setdiff1d(np.array(range(len(b2))), idx2_shared[j]) 
     if (len(idx_pop2) > 0):
-    	idx = range(1) + range(state['population'][1], state['population'][2])
+    	idx = list(range(1)) + list(range(state['population'][1], state['population'][2]))
     	cluster_var = state['cluster_var'][idx]
     	pi = np.array(state['pi'])[idx]
     	C = -.5 * np.log(state['eta']**2*N2*np.outer(np.diag(B2[idx_pop2,:][:,idx_pop2]), cluster_var) + 1) + \
@@ -323,7 +323,7 @@ def sample_eta(state, ld_boundaries1, ld_boundaries2):
 
 def sample_sigma2(state, rho, VS=True):
     b = np.zeros(state['num_clusters_'])
-    a = np.array(state['suffstats'].values() ) / 2.0 + state['hyperparameters_']['a0k'] 
+    a = np.array(list(state['suffstats'].values()) ) / 2.0 + state['hyperparameters_']['a0k'] 
     
     table1 = [[] for i in range(state['num_clusters_'])]
     for i in range(len(state['assignment1'])):
@@ -360,13 +360,14 @@ def sample_sigma2(state, rho, VS=True):
 def update_suffstats(state):
     assn = np.concatenate([state['assignment1'], state['assignment2'][state['idx_pop2']]])
     suff_stats = dict(Counter(assn))
-    suff_stats.update(dict.fromkeys(np.setdiff1d(range(state['num_clusters_']), suff_stats.keys()), 0))
+    suff_stats.update(dict.fromkeys(np.setdiff1d(range(state['num_clusters_']), list(suff_stats.keys())), 0))
+    suff_stats = {k:suff_stats[k] for k in sorted(suff_stats)}
     return suff_stats
 
 def sample_V(state):
     for j in range(1,4):
         m = len(state['V'][j])
-        suffstats = np.array(state['suffstats'].values()[state['population'][j-1]:state['population'][j]])
+        suffstats = np.array(list(state['suffstats'].values())[state['population'][j-1]:state['population'][j]])
         a = 1 + suffstats[:-1]
         b = state['alpha'][j] + np.cumsum(suffstats[::-1])[:-1][::-1]
         sample_val = stats.beta(a=a, b=b).rvs()
@@ -378,7 +379,7 @@ def sample_V(state):
         else:
             sample_return = dict(zip(range(m-1), sample_val))
             sample_return[m-1] = 1
-        state['V'][j] = sample_return.values()
+        state['V'][j] = list(sample_return.values())
 
 def sample_pi_pop(state):
     m = np.array([0.0]*4)
@@ -387,9 +388,9 @@ def sample_pi_pop(state):
     nonnull_pop1 = len(state['idx_pop1']) - null_pop1
     nonnull_pop2 = len(state['idx_pop2']) - null_pop2
     m[0] += state['suffstats'][0] - null_pop1- null_pop2
-    m[1] += np.sum(state['suffstats'].values()[1:state['population'][1]]) - nonnull_pop1
-    m[2] += np.sum(state['suffstats'].values()[state['population'][1]:state['population'][2]]) - nonnull_pop2
-    m[3] += np.sum(state['suffstats'].values()[state['population'][2]:state['population'][3]])
+    m[1] += np.sum(list(state['suffstats'].values())[1:state['population'][1]]) - nonnull_pop1
+    m[2] += np.sum(list(state['suffstats'].values())[state['population'][1]:state['population'][2]]) - nonnull_pop2
+    m[3] += np.sum(list(state['suffstats'].values())[state['population'][2]:state['population'][3]])
     state['suff_pop'] = m
     state['pi_pop'] = dict(zip(range(0, 4), stats.dirichlet(m+1).rvs()[0]))
         
@@ -402,12 +403,12 @@ def update_p(state):
         a = np.cumprod(1-np.array(V)[0:(m-2)])*V[1:(m-1)]
         pi = dict(zip(range(1, m), a))
         pi[0] = state['V'][j][0]
-        pi[m-1] = 1 - np.sum(pi.values()[0:(m-1)])
+        pi[m-1] = 1 - np.sum(list(pi.values())[0:(m-1)])
 
         # last p may be less than 0 due to rounding error
         if pi[m-1] < 0: 
             pi[m-1] = 0
-        state['pi_cluster'][j] = pi.values()
+        state['pi_cluster'][j] = list(pi.values())
         idx = range(state['population'][j-1], state['population'][j])
         state['pi'][idx] = np.array(state['pi_cluster'][j])*state['pi_pop'][j]
 
@@ -426,7 +427,7 @@ def gibbs_stick_break(state, rho, idx1_shared, idx2_shared, ld_boundaries1, ld_b
     for j in range(len(ld_boundaries1)):
         calc_b(j, state, ld_boundaries1, ld_boundaries2, ref_ld_mat1, ref_ld_mat2)
         
-    tmp = Parallel(n_jobs=n_threads, require='sharedmem')(delayed(sample_assignment)(j=j, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, ref_ld_mat2=ref_ld_mat2, state=state, rho=rho, VS=True) for j in range(len(ld_boundaries1)))
+    tmp = Parallel(n_jobs=n_threads)(delayed(sample_assignment)(j=j, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, ref_ld_mat2=ref_ld_mat2, state=state, rho=rho, VS=True) for j in range(len(ld_boundaries1)))
     state['assignment1'] = np.concatenate([tmp[j][0].astype(int) for j in range(len(ld_boundaries1))])
     state['assignment2'] = np.concatenate([tmp[j][1].astype(int) for j in range(len(ld_boundaries1))])
     

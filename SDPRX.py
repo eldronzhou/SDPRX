@@ -13,7 +13,7 @@ import pandas as pd
 
 
 def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries2, ref_ld_mat1, ref_ld_mat2, mcmc_samples, 
-    burn, max_cluster, save_mcmc, n_threads, VS=True):
+    burn, max_cluster, n_threads, VS=True):
     M = [1, 1000, 1000, 1000]
     trace = {'alpha':[], 'num_cluster':[], 'beta1':np.zeros(shape=(mcmc_samples, len(beta_margin1))),
         'beta2':np.zeros(shape=(mcmc_samples, len(beta_margin2))),
@@ -46,15 +46,15 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
         trace['beta1'][i,] = state['beta1']*state['eta']
         trace['beta2'][i,] = state['beta2']*state['eta']
 
-	if (state['h2_1'] == 0  and state['h2_2'] == 0):
-	    state = gibbs.initial_state(data1=beta_margin1, data2=beta_margin2, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, M=M, N1=N1, N2=N2, a0k=.5, b0k=.5)
-	    state['suffstats'] = gibbs.update_suffstats(state)
-	    state['a'] = 0.1; state['c'] = 1
-	    state['A1'] = [np.linalg.solve(ref_ld_mat1[j]+state['a']*np.identity(ref_ld_mat1[j].shape[0]), ref_ld_mat1[j]) for j in range(len(ld_boundaries1))]
-	    state['B1'] = [np.dot(ref_ld_mat1[j], state['A1'][j]) for j in range(len(ld_boundaries1))]
-	    state['A2'] = [np.linalg.solve(ref_ld_mat2[j]+state['a']*np.identity(ref_ld_mat2[j].shape[0]), ref_ld_mat2[j]) for j in range(len(ld_boundaries2))]
-	    state['B2'] = [np.dot(ref_ld_mat2[j], state['A2'][j]) for j in range(len(ld_boundaries2))]
-	    state['eta'] = 1
+        if (state['h2_1'] == 0  and state['h2_2'] == 0):
+            state = gibbs.initial_state(data1=beta_margin1, data2=beta_margin2, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, M=M, N1=N1, N2=N2, a0k=.5, b0k=.5)
+            state['suffstats'] = gibbs.update_suffstats(state)
+            state['a'] = 0.1; state['c'] = 1
+            state['A1'] = [np.linalg.solve(ref_ld_mat1[j]+state['a']*np.identity(ref_ld_mat1[j].shape[0]), ref_ld_mat1[j]) for j in range(len(ld_boundaries1))]
+            state['B1'] = [np.dot(ref_ld_mat1[j], state['A1'][j]) for j in range(len(ld_boundaries1))]
+            state['A2'] = [np.linalg.solve(ref_ld_mat2[j]+state['a']*np.identity(ref_ld_mat2[j].shape[0]), ref_ld_mat2[j]) for j in range(len(ld_boundaries2))]
+            state['B2'] = [np.dot(ref_ld_mat2[j], state['A2'][j]) for j in range(len(ld_boundaries2))]
+            state['eta'] = 1
 
         util.progressBar(value=i+1, endvalue=mcmc_samples)
 
@@ -62,7 +62,7 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
     poster_mean1 = np.mean(trace['beta1'][burn:mcmc_samples], axis=0)
     poster_mean2 = np.mean(trace['beta2'][burn:mcmc_samples], axis=0)
     
-    print 'h2_1: ' + str(np.median(trace['h2_1'])) + ' h2_2: ' + str(np.median(trace['h2_2'])) + ' max_beta1: ' + str(np.max(poster_mean1)) + ' max_beta2: ' + str(np.max(poster_mean2))
+    print('h2_1: ' + str(np.median(trace['h2_1'])) + ' h2_2: ' + str(np.median(trace['h2_2'])) + ' max_beta1: ' + str(np.max(poster_mean1)) + ' max_beta2: ' + str(np.max(poster_mean2)))
 
     print(state['pi_pop'])
 
@@ -93,9 +93,10 @@ def pipeline(args):
 
     f = gzip.open(args.load_ld + '/chr_' + str(args.chr) +'.gz', 'r')
     try:
-	ld_dict = pickle.load(f)
+        ld_dict = pickle.load(f)
     except:
-	ld_dict = pickle.load(f, encoding='latin1')
+        f.seek(0)
+        ld_dict = pickle.load(f, encoding='latin1')
     f.close()
     
     snps = ld_dict[0]; a1 = ld_dict[1]; a2 = ld_dict[2]
@@ -106,65 +107,65 @@ def pipeline(args):
     tmp_ss2 = pd.merge(ref, ss2, on="SNP", how="left")
 
     for i in range(len(ref_boundary)):
-	tmp_blk_ss1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]
-	tmp_blk_ss2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]
-	tmp_beta1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['BETA'] / np.sqrt(tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'])
-	tmp_beta2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['BETA'] / np.sqrt(tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'] )
-	idx1_ss1 = np.logical_and(tmp_blk_ss1['A1_x'] == tmp_blk_ss1['A1_y'], tmp_blk_ss1['A2_x'] == tmp_blk_ss1['A2_y'])
-	idx2_ss1 = np.logical_and(tmp_blk_ss1['A1_x'] == tmp_blk_ss1['A2_y'], 
-		tmp_blk_ss1['A2_x'] == tmp_blk_ss1['A1_y'])
-	tmp_beta1[idx2_ss1] = -tmp_beta1[idx2_ss1] 
-	idx1_ss2 = np.logical_and(tmp_blk_ss2['A1_x'] == tmp_blk_ss2['A1_y'], 
-		tmp_blk_ss2['A2_x'] == tmp_blk_ss2['A2_y'])
-	idx2_ss2 = np.logical_and(tmp_blk_ss2['A1_x'] == tmp_blk_ss2['A2_y'], 
-		tmp_blk_ss2['A2_x'] == tmp_blk_ss2['A1_y'])
-	tmp_beta2[idx2_ss2] = -tmp_beta2[idx2_ss2] 
-	idx1 = np.logical_or(idx1_ss1, idx2_ss1)
-	idx2 = np.logical_or(idx1_ss2, idx2_ss2)
-	
-	idx = np.logical_or(idx1, idx2)
-	if np.sum(idx) == 0:
-	    continue
-	
-	if np.sum(idx1) != 0 and np.sum(idx2) != 0 and np.sum(idx2[idx1]) != 0:
-	    ref_ld_mat1.append(ref1[i][idx1,:][:,idx1])
-	    ld_boundaries1.append([left1, left1+np.sum(idx1)])
-	    beta_margin1.extend(list(tmp_beta1[idx1])) 
-	    SNP1.extend(list(tmp_blk_ss1[idx1].SNP))
-	    A1_1.extend(list(tmp_blk_ss1[idx1].A1_x))
-	    idx1_shared.append(np.where(idx2[idx1])[0])
-	    left1 += np.sum(idx1)
+    	tmp_blk_ss1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]
+    	tmp_blk_ss2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]
+    	tmp_beta1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['BETA'] / np.sqrt(tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'])
+    	tmp_beta2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['BETA'] / np.sqrt(tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'] )
+    	idx1_ss1 = np.logical_and(tmp_blk_ss1['A1_x'] == tmp_blk_ss1['A1_y'], tmp_blk_ss1['A2_x'] == tmp_blk_ss1['A2_y'])
+    	idx2_ss1 = np.logical_and(tmp_blk_ss1['A1_x'] == tmp_blk_ss1['A2_y'], 
+    		tmp_blk_ss1['A2_x'] == tmp_blk_ss1['A1_y'])
+    	tmp_beta1[idx2_ss1] = -tmp_beta1[idx2_ss1] 
+    	idx1_ss2 = np.logical_and(tmp_blk_ss2['A1_x'] == tmp_blk_ss2['A1_y'], 
+    		tmp_blk_ss2['A2_x'] == tmp_blk_ss2['A2_y'])
+    	idx2_ss2 = np.logical_and(tmp_blk_ss2['A1_x'] == tmp_blk_ss2['A2_y'], 
+    		tmp_blk_ss2['A2_x'] == tmp_blk_ss2['A1_y'])
+    	tmp_beta2[idx2_ss2] = -tmp_beta2[idx2_ss2] 
+    	idx1 = np.logical_or(idx1_ss1, idx2_ss1)
+    	idx2 = np.logical_or(idx1_ss2, idx2_ss2)
+    	
+    	idx = np.logical_or(idx1, idx2)
+    	if np.sum(idx) == 0:
+    	    continue
+    	
+    	if np.sum(idx1) != 0 and np.sum(idx2) != 0 and np.sum(idx2[idx1]) != 0:
+    	    ref_ld_mat1.append(ref1[i][idx1,:][:,idx1])
+    	    ld_boundaries1.append([left1, left1+np.sum(idx1)])
+    	    beta_margin1.extend(list(tmp_beta1[idx1])) 
+    	    SNP1.extend(list(tmp_blk_ss1[idx1].SNP))
+    	    A1_1.extend(list(tmp_blk_ss1[idx1].A1_x))
+    	    idx1_shared.append(np.where(idx2[idx1])[0])
+    	    left1 += np.sum(idx1)
 
-	    ref_ld_mat2.append(ref2[i][idx2,:][:,idx2])
-	    ld_boundaries2.append([left2, left2+np.sum(idx2)])
-	    beta_margin2.extend(list(tmp_beta2[idx2]))
-	    SNP2.extend(list(tmp_blk_ss2[idx2].SNP))
-	    A1_2.extend(list(tmp_blk_ss2[idx2].A1_x))
-	    idx2_shared.append(np.where(idx1[idx2])[0])
-	    left2 += np.sum(idx2)
+    	    ref_ld_mat2.append(ref2[i][idx2,:][:,idx2])
+    	    ld_boundaries2.append([left2, left2+np.sum(idx2)])
+    	    beta_margin2.extend(list(tmp_beta2[idx2]))
+    	    SNP2.extend(list(tmp_blk_ss2[idx2].SNP))
+    	    A1_2.extend(list(tmp_blk_ss2[idx2].A1_x))
+    	    idx2_shared.append(np.where(idx1[idx2])[0])
+    	    left2 += np.sum(idx2)
 
-	elif np.sum(idx1) != 0:
-	    ref_ld_mat1[-1] = np.block([[ref_ld_mat1[-1], np.zeros((ref_ld_mat1[-1].shape[0], np.sum(idx1)))], [np.zeros((np.sum(idx1), ref_ld_mat1[-1].shape[0])), ref1[i][idx1,:][:,idx1]]])
-	    ld_boundaries1[-1][1] += np.sum(idx1)
-	    beta_margin1.extend(list(tmp_beta1[idx1])) 
-	    SNP1.extend(list(tmp_blk_ss1[idx1].SNP))
-	    A1_1.extend(list(tmp_blk_ss1[idx1].A1_x))
-	    left1 += np.sum(idx1)
-	
-	elif np.sum(idx2) != 0:
-	    ref_ld_mat2[-1] = np.block([[ref_ld_mat2[-1], np.zeros((ref_ld_mat2[-1].shape[0], np.sum(idx2)))], [np.zeros((np.sum(idx2), ref_ld_mat2[-1].shape[0])), ref2[i][idx2,:][:,idx2]]])
-	    ld_boundaries2[-1][1] += np.sum(idx2)
-	    beta_margin2.extend(list(tmp_beta2[idx2]))  
-	    SNP2.extend(list(tmp_blk_ss2[idx2].SNP))
-	    A1_2.extend(list(tmp_blk_ss2[idx2].A1_x))
-	    left2 += np.sum(idx2)
+    	elif np.sum(idx1) != 0:
+    	    ref_ld_mat1[-1] = np.block([[ref_ld_mat1[-1], np.zeros((ref_ld_mat1[-1].shape[0], np.sum(idx1)))], [np.zeros((np.sum(idx1), ref_ld_mat1[-1].shape[0])), ref1[i][idx1,:][:,idx1]]])
+    	    ld_boundaries1[-1][1] += np.sum(idx1)
+    	    beta_margin1.extend(list(tmp_beta1[idx1])) 
+    	    SNP1.extend(list(tmp_blk_ss1[idx1].SNP))
+    	    A1_1.extend(list(tmp_blk_ss1[idx1].A1_x))
+    	    left1 += np.sum(idx1)
+    	
+    	elif np.sum(idx2) != 0:
+    	    ref_ld_mat2[-1] = np.block([[ref_ld_mat2[-1], np.zeros((ref_ld_mat2[-1].shape[0], np.sum(idx2)))], [np.zeros((np.sum(idx2), ref_ld_mat2[-1].shape[0])), ref2[i][idx2,:][:,idx2]]])
+    	    ld_boundaries2[-1][1] += np.sum(idx2)
+    	    beta_margin2.extend(list(tmp_beta2[idx2]))  
+    	    SNP2.extend(list(tmp_blk_ss2[idx2].SNP))
+    	    A1_2.extend(list(tmp_blk_ss2[idx2].A1_x))
+    	    left2 += np.sum(idx2)
 
     print(str(args.chr) + ':' + str(len(beta_margin1)) + ' ' + str(len(beta_margin2)))
 
     print('Start MCMC ...')
     res1, res2 = SDPRX_gibbs(beta_margin1=np.array(beta_margin1)/args.c1, beta_margin2=np.array(beta_margin2)/args.c2, N1=N1, N2=N2, rho=args.rho, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, 
                  ref_ld_mat2=ref_ld_mat2, mcmc_samples=args.mcmc_samples, 
-                 burn=args.burn, max_cluster=args.M, save_mcmc=args.save_mcmc, n_threads=args.threads, VS=True)
+                 burn=args.burn, max_cluster=args.M, n_threads=args.threads, VS=True)
 
     print('Done!\nWrite output to {}'.format(args.out+'.txt'))
     
@@ -226,9 +227,6 @@ parser.add_argument('--out', type=str, required=True,
                         help='Prefix of the location for the output tab deliminated .txt file.')
 
 def main():
-    if sys.version_info[0] != 2:
-        print('ERROR: SDPRX currently does not support Python 3')
-        sys.exit(1)
     pipeline(parser.parse_args())
 
 if __name__ == '__main__':
