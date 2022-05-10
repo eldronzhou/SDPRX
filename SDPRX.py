@@ -204,7 +204,7 @@ parser.add_argument('--c2', type=float, default=1.0,
 	                                help='factor to correct for the deflation for the non-EUR summary statistics.')
 
 parser.add_argument('--rho', type=float, default=0.8, required=True,
-                        help='Transethnic genetic correlation. e.g. output from Popcorn')
+                        help='Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8.')
 
 parser.add_argument('--M', type=int, default=1000,
                         help='Maximum number of normal components in Truncated Dirichlet Process.')
