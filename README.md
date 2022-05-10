@@ -40,9 +40,9 @@ python SDPRX.py --ss1 test/EUR.txt --ss2 test/EAS.txt --N1 100000 --N2 100000 --
 A full list of option can be obtained by running `python SDPRX.py -h`.
 
 - ss1 (required): Path to the EUR summary statistics.
-- ss2 (required): Path to the EAS summary statistics.
+- ss2 (required): Path to the non-EUR summary statistics.
 - N1 (required): Sample size of the EUR summary statistics.
-- N2 (required): Sample size of the EAS summary statistics.
+- N2 (required): Sample size of the non-EUR summary statistics.
 - load_ld (required): Path to the referecence LD directory.
 - valid (required): Path to the bim file for the testing dataset, including the .bim suffix.
 - chr (required): Chromosome.
