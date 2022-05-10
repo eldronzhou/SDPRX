@@ -37,7 +37,7 @@ An example command is
 python SDPRX.py --ss1 test/EUR.txt --ss2 test/EAS.txt --N1 100000 --N2 100000 --load_ld ref/EAS/SDPRX/ --valid test/test.bim --chr 22 --rho 0.86 --out test/res_22
 ```
 
-A full list of option can be obtained by running `python SDPRX.py -h`.
+A full list of options can be obtained by running `python SDPRX.py -h`. Below are the required options.
 
 - ss1 (required): Path to the EUR summary statistics.
 - ss2 (required): Path to the non-EUR summary statistics.
@@ -47,7 +47,7 @@ A full list of option can be obtained by running `python SDPRX.py -h`.
 - valid (required): Path to the bim file for the testing dataset, including the .bim suffix.
 - chr (required): Chromosome.
 - out (required): Path to the output file containing estimated effect sizes.
-- rho (required): trans-ethnic genetic correlation. 
+- rho (required): Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8. 
 - n_threads (optional): number of threads to use. Default is 1.
 
 ## Output 
