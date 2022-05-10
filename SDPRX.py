@@ -109,8 +109,8 @@ def pipeline(args):
     for i in range(len(ref_boundary)):
     	tmp_blk_ss1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]
     	tmp_blk_ss2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]
-    	tmp_beta1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['BETA'] / np.sqrt(tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'])
-    	tmp_beta2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['BETA'] / np.sqrt(tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'] )
+    	tmp_beta1 = tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['Z'] / np.sqrt(tmp_ss1.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'])
+    	tmp_beta2 = tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['Z'] / np.sqrt(tmp_ss2.iloc[ref_boundary[i][0]:ref_boundary[i][1]]['N'] )
     	idx1_ss1 = np.logical_and(tmp_blk_ss1['A1_x'] == tmp_blk_ss1['A1_y'], tmp_blk_ss1['A2_x'] == tmp_blk_ss1['A2_y'])
     	idx2_ss1 = np.logical_and(tmp_blk_ss1['A1_x'] == tmp_blk_ss1['A2_y'], 
     		tmp_blk_ss1['A2_x'] == tmp_blk_ss1['A1_y'])
@@ -180,31 +180,31 @@ parser = argparse.ArgumentParser(prog='SDPRX',
                                 description="Version 0.0.1 Test Only")
 
 parser.add_argument('--ss1', type=str, required=True,
-                        help='Path to cleaned summary statistics 1. e.g. /home/tutor/myss.txt')
+                        help='Path to EUR summary statistics. e.g. test/EUR.txt')
 
 parser.add_argument('--ss2', type=str, required=True,
-                        help='Path to cleaned summary statistics 2. e.g. /home/tutor/myss.txt')
+                        help='Path to EAS summary statistics. e.g. test/EAS.txt')
 
-parser.add_argument('--valid', type=str, default=None,
-                        help='Path to valid .bim file..')
+parser.add_argument('--valid', type=str, required=True,
+                        help='Path to the bim file for the testing dataset, including the .bim suffix. e.g. test/test.bim')
 
 parser.add_argument('--N1', type=int, default=None, required=True,
-                        help='Number of individuals in summary statistic sile 1.')
+                        help='Sample size of the EUR summary statistics.')
 
 parser.add_argument('--N2', type=int, default=None, required=True,
-                        help='Number of individuals in summary statistic sile 2.')
+                        help='Sample size of the non-EUR summary statistics.')
 
 parser.add_argument('--chr', type=int, default=None, required=True,
 	                        help='Chromosome.')
 
 parser.add_argument('--c1', type=float, default=1.0,
-	                                help='C1.')
+	                                help='factor to correct for the deflation for the EUR summary statistics.')
 
 parser.add_argument('--c2', type=float, default=1.0,
-	                                help='C2.')
+	                                help='factor to correct for the deflation for the non-EUR summary statistics.')
 
-parser.add_argument('--rho', type=float, default=0, required=True,
-                        help='Transethnic genetic correlation.')
+parser.add_argument('--rho', type=float, default=0.8, required=True,
+                        help='Transethnic genetic correlation. e.g. output from Popcorn')
 
 parser.add_argument('--M', type=int, default=1000,
                         help='Maximum number of normal components in Truncated Dirichlet Process.')
@@ -220,11 +220,11 @@ parser.add_argument('--burn', type=int, default=200,
                         Markov Chain approached the stationary distribution.')
 
 parser.add_argument('--load_ld', type=str, required=True,
-                        help='Prefix of the location to load calculated LD Reference file \
+                        help='Directory of the pre-calculated LD Reference file \
                         in pickled and gzipped format.')
 
 parser.add_argument('--out', type=str, required=True,
-                        help='Prefix of the location for the output tab deliminated .txt file.')
+                        help='Path to the output file containing estimated effect sizes.')
 
 def main():
     pipeline(parser.parse_args())
