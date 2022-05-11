@@ -17,6 +17,11 @@ SDPRX is developed under python 2.7 but should be compatible with python 3.
 
 The reference LD matrices can be downloaded from the following link. 
 
+| Populations | Number of SNPs | Size | Link
+| --- | --- | --- | --- |
+| EUR_EAS | 873,166 | 6.3G | [link](https://drive.google.com/file/d/1MGt-Ai5foThXBF1xAZMKksBRqZGsbQ1l/view?usp=sharing) |
+| EUR_AFR | 903,499 | 8.7G | [link](https://drive.google.com/file/d/1cbcfCicsuARfcv231tY98PTnAoOoQS8O/view?usp=sharing) |
+
 ### Summary Statistics 
 
 The EUR/nonEUR summary statistics should have at least following columns with the same name, where SNP is the marker name, A1 is the effect allele, A2 is the alternative allele, Z is the Z score for the association statistics, and N is the sample size. 
