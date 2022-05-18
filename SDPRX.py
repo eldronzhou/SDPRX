@@ -167,7 +167,7 @@ def pipeline(args):
                  ref_ld_mat2=ref_ld_mat2, mcmc_samples=args.mcmc_samples, 
                  burn=args.burn, max_cluster=args.M, n_threads=args.threads, VS=True)
 
-    print('Done!\nWrite output to {}'.format(args.out+'.txt'))
+    print('Done!\nWrite output to {}'.format(args.out+'_1.txt and '+args.out+'_2.txt'))
     
     out1 = pd.DataFrame({'SNP':SNP1, 'A1':A1_1, 'post_beta':res1})
     out1.to_csv(args.out+'_1.txt', columns=['SNP', 'A1', 'post_beta'], sep="\t", index=False)
