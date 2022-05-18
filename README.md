@@ -39,7 +39,7 @@ rs1983865       T       C       3.652    253135
 An example command is 
 
 ```
-python SDPRX.py --ss1 test/EUR.txt --ss2 test/EAS.txt --N1 100000 --N2 100000 --load_ld ref/EAS/SDPRX/ --valid test/test.bim --chr 22 --rho 0.86 --out test/res_22
+python SDPRX.py --ss1 test/EUR.txt --ss2 test/EAS.txt --N1 40000 --N2 40000 --load_ld test/ --valid test/test.bim --chr 1 --rho 0.8 --out test/res_1
 ```
 
 A full list of options can be obtained by running `python SDPRX.py -h`. Below are the required options.
