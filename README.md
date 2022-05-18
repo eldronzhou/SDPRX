@@ -36,7 +36,7 @@ rs1983865       T       C       3.652    253135
 
 ## Running SDPRX
 
-An example command is 
+An example command to run the test data is 
 
 ```
 python SDPRX.py --ss1 test/EUR.txt --ss2 test/EAS.txt --N1 40000 --N2 40000 --load_ld test/ --valid test/test.bim --chr 1 --rho 0.8 --out test/res_1
@@ -54,6 +54,8 @@ A full list of options can be obtained by running `python SDPRX.py -h`. Below ar
 - out (required): Path to the output file containing estimated effect sizes.
 - rho (required): Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8. 
 - n_threads (optional): number of threads to use. Default is 1.
+
+For real data analysis, it is recommended to run each SDPRX on each chromosome in parallel, and using 3 threads for each chromsome.  
 
 ## Output 
 
