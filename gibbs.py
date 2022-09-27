@@ -40,7 +40,7 @@ def initial_state(data1, data2, M, N1, N2, idx1_shared, idx2_shared, ld_boundari
         'h2_2': 0,
         'eta': 1
     }
-    
+   
     # define indexes 
     state['population'][0] = 1 # null
     state['population'][1] = M[1] + 1 # pop 1 specific
@@ -421,7 +421,7 @@ def sample_alpha(state):
         state['alpha'][j] = stats.gamma(a=a, scale=1.0/b).rvs()
 
 
-def gibbs_stick_break(state, rho, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries2, ref_ld_mat1, ref_ld_mat2, n_threads, VS=True):
+def gibbs_stick_break(state, rho, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries2, ref_ld_mat1, ref_ld_mat2, n_threads, force_shared, VS=True):
     state['cluster_var'] = sample_sigma2(state, rho, VS)
 
     for j in range(len(ld_boundaries1)):
@@ -432,7 +432,8 @@ def gibbs_stick_break(state, rho, idx1_shared, idx2_shared, ld_boundaries1, ld_b
     state['assignment2'] = np.concatenate([tmp[j][1].astype(int) for j in range(len(ld_boundaries1))])
     
     state['suffstats'] = update_suffstats(state) 
-    sample_pi_pop(state)
+    if not force_shared:
+        sample_pi_pop(state)
     sample_V(state) 
     update_p(state) 
     sample_alpha(state) 

@@ -13,8 +13,11 @@ import pandas as pd
 
 
 def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_shared, ld_boundaries1, ld_boundaries2, ref_ld_mat1, ref_ld_mat2, mcmc_samples, 
-    burn, max_cluster, n_threads, VS=True):
+    burn, max_cluster, n_threads, force_shared, VS=True):
     M = [1, 1000, 1000, 1000]
+    if force_shared:
+        print("Forcing shared effect sizes.\n")
+        M = [1, 10, 10, 1000]
     trace = {'alpha':[], 'num_cluster':[], 'beta1':np.zeros(shape=(mcmc_samples, len(beta_margin1))),
         'beta2':np.zeros(shape=(mcmc_samples, len(beta_margin2))),
         'suffstats':[], 'h2_1':[], 'h2_2':[]}
@@ -23,7 +26,9 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
     state = gibbs.initial_state(data1=beta_margin1, data2=beta_margin2, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, M=M, N1=N1, N2=N2, a0k=.5, b0k=.5)
     state['suffstats'] = gibbs.update_suffstats(state)
     state['cluster_var'] = gibbs.sample_sigma2(state, rho=rho, VS=True)
-
+    if force_shared:
+        state['pi_pop'][1] = 0; state['pi_pop'][2] = 0
+    
     state['a'] = 0.1; state['c'] = 1
     state['A1'] = [np.linalg.solve(ref_ld_mat1[j]+state['a']*np.identity(ref_ld_mat1[j].shape[0]), ref_ld_mat1[j]) for j in range(len(ld_boundaries1))]
     state['B1'] = [np.dot(ref_ld_mat1[j], state['A1'][j]) for j in range(len(ld_boundaries2))]
@@ -33,7 +38,7 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
     for i in range(mcmc_samples):
         # update everything
         gibbs.gibbs_stick_break(state, rho=rho, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, 
-            ref_ld_mat2=ref_ld_mat2, n_threads=n_threads, VS=VS)
+            ref_ld_mat2=ref_ld_mat2, n_threads=n_threads, VS=VS, force_shared=force_shared)
 
         if (i > burn):
             trace['h2_1'].append(state['h2_1']*state['eta']**2)
@@ -48,6 +53,8 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
 
         if (state['h2_1'] == 0  and state['h2_2'] == 0):
             state = gibbs.initial_state(data1=beta_margin1, data2=beta_margin2, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, M=M, N1=N1, N2=N2, a0k=.5, b0k=.5)
+            if force_shared:
+                state['pi_pop'][1] = 0; state['pi_pop'][2] = 0
             state['suffstats'] = gibbs.update_suffstats(state)
             state['a'] = 0.1; state['c'] = 1
             state['A1'] = [np.linalg.solve(ref_ld_mat1[j]+state['a']*np.identity(ref_ld_mat1[j].shape[0]), ref_ld_mat1[j]) for j in range(len(ld_boundaries1))]
@@ -165,7 +172,7 @@ def pipeline(args):
     print('Start MCMC ...')
     res1, res2 = SDPRX_gibbs(beta_margin1=np.array(beta_margin1)/args.c1, beta_margin2=np.array(beta_margin2)/args.c2, N1=N1, N2=N2, rho=args.rho, idx1_shared=idx1_shared, idx2_shared=idx2_shared, ld_boundaries1=ld_boundaries1, ld_boundaries2=ld_boundaries2, ref_ld_mat1=ref_ld_mat1, 
                  ref_ld_mat2=ref_ld_mat2, mcmc_samples=args.mcmc_samples, 
-                 burn=args.burn, max_cluster=args.M, n_threads=args.threads, VS=True)
+                 burn=args.burn, max_cluster=args.M, n_threads=args.threads, force_shared=args.force_shared, VS=True)
 
     print('Done!\nWrite output to {}'.format(args.out+'_1.txt and '+args.out+'_2.txt'))
     
@@ -205,6 +212,9 @@ parser.add_argument('--c2', type=float, default=1.0,
 
 parser.add_argument('--rho', type=float, default=0.8, required=True,
                         help='Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8.')
+
+parser.add_argument('--force_shared', type=bool, default=True, required=True,
+	                help='Whether to force sharing of effect sizes between ppopulations (e.g. p1=p2=0, p0=p3=0.35).')
 
 parser.add_argument('--M', type=int, default=1000,
                         help='Maximum number of normal components in Truncated Dirichlet Process.')
