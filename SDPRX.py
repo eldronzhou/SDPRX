@@ -214,7 +214,7 @@ parser.add_argument('--rho', type=float, default=0.8, required=True,
                         help='Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8.')
 
 parser.add_argument('--force_shared', type=bool, default=True, required=True,
-	                help='Whether to force sharing of effect sizes between ppopulations (e.g. p1=p2=0, p0=p3=0.35).')
+	                help='Whether to force sharing of effect sizes between populations.')
 
 parser.add_argument('--M', type=int, default=1000,
                         help='Maximum number of normal components in Truncated Dirichlet Process.')

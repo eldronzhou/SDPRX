@@ -53,6 +53,7 @@ A full list of options can be obtained by running `python SDPRX.py -h`. Below ar
 - chr (required): Chromosome.
 - out (required): Path to the output file containing estimated effect sizes.
 - rho (required): Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8. 
+- force_shared (required): Whether to force sharing of effect sizes between populations. Default is True.
 - n_threads (optional): number of threads to use. Default is 1.
 
 For real data analysis, it is recommended to run each SDPRX on each chromosome in parallel, and using 3 threads for each chromsome.  
