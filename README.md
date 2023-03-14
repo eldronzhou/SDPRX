@@ -6,7 +6,7 @@ SDPRX is a statistical method for cross-population prediction of complex traits.
 You can download SDPRX by simply running
 
 ```
-git clone https://github.com/eldronzhou/SDPR.git
+git clone https://github.com/eldronzhou/SDPRX.git
 ```
 
 SDPRX is developed under python 2.7 but should be compatible with python 3. 
@@ -67,4 +67,8 @@ One can use [PLINK](https://www.cog-genomics.org/plink/1.9/score) to derive the 
 plink --bfile test_geno --score res_22_1.txt 1 2 3 header --out test_1 # EUR
 plink --bfile test_geno --score res_22_2.txt 1 2 3 header --out test_2 # non-EUR
 ```
-If a validation dataset is available, one can further learn a linear combination of PRS based on the best performance in the validation dataset. 
+If a validation dataset is available, one can further learn a linear combination of PRS (a * PRS_1 + (1-a) * PRS_2 for a grid of a ranging from 0 to 1 by a step of 0.5) based on the best performance in the validation dataset. 
+
+## Citation
+
+Zhou G, Chen T, Zhao H. SDPRX: A statistical method for cross-population prediction of complex traits. Am J Hum Genet. 2023 Jan 5;110(1):13-22. doi: 10.1016/j.ajhg.2022.11.007. 
