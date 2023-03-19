@@ -346,7 +346,7 @@ def sample_sigma2(state, rho, VS=True):
         a[i] += state['suffstats'][i] / 2.0
         beta1 = state['beta1'][table1[i]]
         beta2 = state['beta2'][table2[i]]
-        b[i] = np.sum( (beta1**2 + beta2**2 - 2*rho*beta1*beta2) / 2*(1-rho**2) ) + state['hyperparameters_']['b0k']
+        b[i] = np.sum( (beta1**2 + beta2**2 - 2*rho*beta1*beta2) / (2*(1-rho**2)) ) + state['hyperparameters_']['b0k']
     
     out = np.array([0.0]*state['num_clusters_'])
     if VS is True:
