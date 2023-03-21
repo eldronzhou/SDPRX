@@ -69,6 +69,10 @@ plink --bfile test_geno --score res_22_2.txt 1 2 3 header --out test_2 # non-EUR
 ```
 If a validation dataset is available, one can further learn a linear combination of PRS (a * PRS_1 + (1-a) * PRS_2 for a grid of a ranging from 0 to 1 by a step of 0.5) based on the best performance in the validation dataset. 
 
+## Weights
+
+The weights for real traits analyzed in our paper can be downloaded [here](https://drive.google.com/file/d/1bDaTVnitwAizhhW7IJqpx-tbXJIdm7S4/view?usp=share_link). 
+
 ## Citation
 
 Zhou G, Chen T, Zhao H. SDPRX: A statistical method for cross-population prediction of complex traits. Am J Hum Genet. 2023 Jan 5;110(1):13-22. doi: 10.1016/j.ajhg.2022.11.007. 
