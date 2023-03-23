@@ -9,18 +9,24 @@ You can download SDPRX by simply running
 git clone https://github.com/eldronzhou/SDPRX.git
 ```
 
-SDPRX is developed under python 2.7 but should be compatible with python 3. 
+SDPRX is developed under python 2.7 but should be compatible with python 3. We recommend you to run SDPRX in the [Anaconda](https://docs.anaconda.com/anaconda/install/index.html) so that libraries like numpy and scipy would be pre-installed. If running in the Anaconda environment, the only requirement to run SDPRX would be installing [joblib](https://joblib.readthedocs.io/en/latest/installing.html).
 
 ## Input 
 
 ### Reference LD
 
-The reference LD matrices can be downloaded from the following link. 
+The reference LD matrices based on 1000 Genome Hapmap3 SNPs can be downloaded from the following link. 
 
 | Populations | Number of SNPs | Size | Link
 | --- | --- | --- | --- |
 | EUR_EAS | 873,166 | 6.3G | [link](https://drive.google.com/file/d/1MGt-Ai5foThXBF1xAZMKksBRqZGsbQ1l/view?usp=sharing) |
 | EUR_AFR | 903,499 | 8.7G | [link](https://drive.google.com/file/d/1cbcfCicsuARfcv231tY98PTnAoOoQS8O/view?usp=sharing) |
+
+You can use the following command if you wish to use your LD panel to estimate LD matrix. 
+
+```
+python calc_ref.py --ref_path1 path_to_plink1_prefix_pop1 --ref_path2 path_to_plink1_prefix_pop2 --chrom chr_number --threads 3 --out ./
+```
 
 ### Summary Statistics 
 
