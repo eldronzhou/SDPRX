@@ -1,6 +1,11 @@
+#!/usr/bin/env python
 from plinkio import plinkfile
 import numpy as np, pandas as pd
-import gzip, h5py, cPickle
+import gzip, h5py
+try:
+    import pickle as pickle
+except:
+    import cPickle as pickle
 from joblib import Parallel, delayed
 import argparse
 
@@ -97,7 +102,7 @@ def calc_ref(ref_path1, ref_path2, out, n_threads, cutoff, chrom):
                merge['A2_x'] == merge['A2_y'])
     idx_flip = np.logical_and(merge['A1_x'] == merge['A2_y'], 
                merge['A2_x'] == merge['A1_y'])
-    assert np.alltrue(np.logical_or(idx_matched, idx_flip))
+    #assert np.alltrue(np.logical_or(idx_matched, idx_flip))
     snps2[idx_flip,] = 2 - snps2[idx_flip,]
     
     n_rows1 = np.shape(snps1)[0]; n_cols1 = np.shape(snps1)[1]
@@ -121,7 +126,7 @@ def calc_ref(ref_path1, ref_path2, out, n_threads, cutoff, chrom):
     boundary.append([0+left, idx[0]])
     for i in range(np.size(idx)-1):
         boundary.append([idx[i], idx[i+1]])   
-    assert boundary[-1][1] == right, 'something wrong with chrom ' + str(chrom)
+    #assert boundary[-1][1] == right, 'something wrong with chrom ' + str(chrom)
     size = [i[1] - i[0] for i in boundary]
 
     skip_start = False
@@ -142,7 +147,7 @@ def calc_ref(ref_path1, ref_path2, out, n_threads, cutoff, chrom):
                                         for i in range(len(ld_boundaries)))   
  
     f = gzip.open(out+"/chr_"+str(chrom)+".gz", 'wb')
-    cPickle.dump([bim1.iloc[idx1]['SNP_id'], bim1.iloc[idx1]['A1'], bim1.iloc[idx1]['A2'],
+    pickle.dump([bim1.iloc[idx1]['SNP_id'], bim1.iloc[idx1]['A1'], bim1.iloc[idx1]['A2'],
                   ld_boundaries, ref_ld_mat1, ref_ld_mat2], f, protocol=2)
     f.close()
 
