@@ -77,6 +77,8 @@ def SDPRX_gibbs(beta_margin1, beta_margin2, N1, N2, rho, idx1_shared, idx2_share
 
 def pipeline(args):
     
+    print(args.force_shared)
+
     # sanity check
 
     N1 = args.N1; N2 = args.N2
@@ -213,7 +215,7 @@ parser.add_argument('--c2', type=float, default=1.0,
 parser.add_argument('--rho', type=float, default=0.8, required=True,
                         help='Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8.')
 
-parser.add_argument('--force_shared', type=bool, default=True, required=True,
+parser.add_argument('--force_shared', required=True, default="TRUE", type=lambda x: (str(x).lower() == 'true'),
 	                help='Whether to force sharing of effect sizes between populations.')
 
 parser.add_argument('--M', type=int, default=1000,

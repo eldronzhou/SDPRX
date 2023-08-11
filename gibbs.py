@@ -401,8 +401,8 @@ def update_p(state):
         m = len(state['V'][j])
         V = state['V'][j]
         a = np.cumprod(1-np.array(V)[0:(m-2)])*V[1:(m-1)]
-	pi = dict()
-	pi[0] = state['V'][j][0]
+        pi = dict()
+        pi[0] = state['V'][j][0]
         pi.update(dict(zip(range(1, m), a)))   
         pi[m-1] = 1 - np.sum(list(pi.values())[0:(m-1)])
 
