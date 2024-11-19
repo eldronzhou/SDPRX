@@ -77,7 +77,7 @@ If a validation dataset is available, one can further learn a linear combination
 
 ## Weights
 
-The weights for real traits analyzed in our paper can be downloaded [here](https://drive.google.com/file/d/1bDaTVnitwAizhhW7IJqpx-tbXJIdm7S4/view?usp=share_link). 
+The weights for real traits analyzed in our paper can be downloaded [here](https://app.box.com/s/9auedn4wzx563pbtplq3h106ybn3h3dq). The summary information in the format of PGS catalog can be found [here](https://app.box.com/s/1ky2bpkblg2jnv0v9le9r4tkej4sud87).
 
 ## Citation
 
