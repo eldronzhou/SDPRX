@@ -134,6 +134,10 @@ def calc_ref(ref_path1, ref_path2, out, n_threads, cutoff, chrom):
         if skip_start is False:
             start_i = boundary[i][0]
         stop_i = boundary[i][1]
+        if stop_i - start_i <= 1:
+            ld_boundaries[-1][1] = stop_i
+            skip_start = False
+            continue
         if stop_i - start_i < 300 and i != len(boundary)-1:
             skip_start = True
             continue
