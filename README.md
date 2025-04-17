@@ -15,7 +15,7 @@ SDPRX is developed under python 2.7 but should be compatible with python 3. We r
 
 ### Reference LD
 
-The reference LD matrices based on 1000 Genome Hapmap3 SNPs can be downloaded from the following link. 
+The reference LD matrices based on 1000 Genome Hapmap3 SNPs can be downloaded from the following link. Downgrade to pandas <= 2.0 if there is error opening those files.
 
 | Populations | Number of SNPs | Size | Link
 | --- | --- | --- | --- |
