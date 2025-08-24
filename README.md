@@ -32,7 +32,7 @@ python calc_ref.py --ref_path1 path_to_plink1_prefix_pop1 --ref_path2 path_to_pl
 
 ### Summary Statistics 
 
-The EUR/nonEUR summary statistics should have at least following columns with the same name, where SNP is the marker name, A1 is the effect allele, A2 is the alternative allele, Z is the Z score for the association statistics, and N is the sample size. 
+The EUR/nonEUR summary statistics should have at least following columns with the same name, where SNP is the marker name, A1 is the effect allele, A2 is the alternative allele, Z is the Z score for the association statistics, and N is the sample size. The summary statistics should be tab separated. 
 
 ```
 SNP     A1      A2      Z       N
@@ -57,7 +57,7 @@ A full list of options can be obtained by running `python SDPRX.py -h`. Below ar
 - N1 (required): Sample size of the EUR summary statistics.
 - N2 (required): Sample size of the non-EUR summary statistics.
 - load_ld (required): Path to the referecence LD directory.
-- valid (required): Path to the bim file for the testing dataset, including the .bim suffix.
+- valid (required): Path to the bim file for the testing dataset, including the .bim suffix. The second column of the bim file should be the SNP id.
 - chr (required): Chromosome.
 - out (required): Path to the output file containing estimated effect sizes.
 - rho (required): Trans-ethnic genetic correlation output by PopCorn between 0 and 1. Default is 0.8. 
