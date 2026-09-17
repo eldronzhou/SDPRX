@@ -21,8 +21,8 @@ The reference LD matrices based on 1000 Genome Hapmap3 SNPs can be downloaded fr
 | --- | --- | --- | --- |
 | EUR_EAS | 873,166 | 6.3G | [link](https://app.box.com/s/ck9t8fh8x3hqyhl7blvih16q4vcsnj9v) |
 | EUR_AFR | 903,499 | 8.7G | [link](https://app.box.com/s/ibw4lbjxkrgopdacgfh9zcmyr4ibo6ru) |
-| EUR_SAS |  | 19G | [link](https://app.box.com/s/fvxjap1wfeo7db8w2ty35ecrmo7ozrx4) |
-| EUR_AMR |  | 14G | [link](https://app.box.com/s/atoqnpdm970cv740bwz4uae2yzy8zfxf) |
+| EUR_SAS |  | 16G | [link](https://app.box.com/s/gou97zmel8talxhuhn00yf34egojdq6q) |
+| EUR_AMR |  | 8G | [link](https://app.box.com/s/y85dc7rz324m5x4u2mgd3atxgosovfds) |
 
 You can use the following command if you wish to use your LD panel to estimate LD matrix. 
 
